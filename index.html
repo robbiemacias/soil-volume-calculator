@@ -1,265 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soil Volume Calculator</title>
-    <!-- Use the Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        input[type="range"]::-webkit-slider-runnable-track {
-            background: #d1d5db; /* gray-300 */
-            height: 8px;
-            border-radius: 9999px;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #2563eb; /* blue-600 */
-            border-radius: 50%;
-            margin-top: -6px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soil Volume Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green-dark:   #1e5c3a;
+      --green-mid:    #2d7a52;
+      --green-light:  #52b788;
+      --green-pale:   #d8f3dc;
+      --bg:           #f4faf6;
+      --surface:      #ffffff;
+      --border:       #c8e6d4;
+      --text:         #1a1a1a;
+      --text-muted:   #4a5e53;
+      --radius:       8px;
+      --shadow:       0 2px 8px rgba(0,0,0,0.08);
+    }
+    body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .site-nav {
+      background: var(--green-dark); padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between; height: 54px;
+    }
+    .site-nav a { color: #fff; text-decoration: none; font-size: 0.85rem; opacity: 0.85; transition: opacity 0.15s; }
+    .site-nav a:hover { opacity: 1; }
+    .nav-brand { font-weight: 700; font-size: 0.95rem; opacity: 1 !important; }
+    .page-header { background: var(--green-mid); color: #fff; padding: 32px 24px 28px; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+    .page-header p { font-size: 0.9rem; opacity: 0.85; }
+    .container { max-width: 680px; margin: 0 auto; padding: 32px 24px 60px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px;
+    }
+    .card h2 { font-size: 1rem; font-weight: 600; color: var(--green-dark); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid var(--green-pale); }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.88rem; font-weight: 500; color: var(--text-muted); margin-bottom: 8px; }
+    input[type='number'] {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      font-family: inherit; font-size: 0.9rem; background: var(--bg); color: var(--text);
+    }
+    input[type='number']:focus { outline: none; border-color: var(--green-light); }
+    input[type='range'] { width: 100%; cursor: pointer; accent-color: var(--green-mid); }
+    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .radio-option {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--green-pale); padding: 10px 16px; border-radius: var(--radius);
+      cursor: pointer; flex: 1; border: 1px solid var(--border);
+      font-size: 0.88rem; font-weight: 500; transition: background 0.15s;
+    }
+    .radio-option:hover { background: #b7e4c7; }
+    input[type='radio'] { accent-color: var(--green-mid); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .range-row { display: flex; align-items: center; gap: 12px; }
+    .range-row input[type='range'] { flex: 1; }
+    .range-val { font-weight: 600; color: var(--green-dark); background: var(--green-pale); padding: 4px 10px; border-radius: var(--radius); font-size: 0.88rem; white-space: nowrap; }
+    .hidden { display: none !important; }
+    .btn-row { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; border: none; border-radius: var(--radius); font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-primary { background: var(--green-mid); color: #fff; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-secondary { background: var(--green-pale); color: var(--green-dark); }
+    .btn-secondary:hover { background: #b7e4c7; }
+    #result-container {
+      margin-top: 20px; padding: 18px 20px;
+      background: var(--green-pale); border-left: 4px solid var(--green-light);
+      border-radius: var(--radius); text-align: center;
+    }
+    #result-container h2 { font-size: 0.95rem; font-weight: 600; color: var(--green-dark); margin-bottom: 8px; border: none; padding: 0; }
+    #result-value { font-size: 1.8rem; font-weight: 700; color: var(--green-dark); }
+    .site-footer { text-align: center; padding: 20px; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border); background: var(--surface); }
+    .site-footer a { color: var(--green-mid); text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+  </style>
 </head>
-<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
-
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl p-8 space-y-8">
-        <div class="text-center">
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-800">Soil Volume Calculator</h1>
-            <p class="text-sm sm:text-md text-slate-500 mt-2">Calculate the volume or required depth of cultivated soil.</p>
-        </div>
-
-        <!-- Calculation Mode -->
-        <div class="flex flex-col space-y-4">
-            <label class="text-slate-600 font-medium">Choose Calculation Mode:</label>
-            <div class="flex space-x-4">
-                <label class="flex items-center space-x-2 cursor-pointer bg-slate-100 p-3 rounded-lg flex-1 transition-colors duration-200 hover:bg-slate-200">
-                    <input type="radio" name="calculationMode" value="volume" checked class="text-blue-600 focus:ring-blue-500">
-                    <span>Calculate Volume</span>
-                </label>
-                <label class="flex items-center space-x-2 cursor-pointer bg-slate-100 p-3 rounded-lg flex-1 transition-colors duration-200 hover:bg-slate-200">
-                    <input type="radio" name="calculationMode" value="depth" class="text-blue-600 focus:ring-blue-500">
-                    <span>Calculate Depth</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Area Input Method -->
-        <div class="flex flex-col space-y-4">
-            <label class="text-slate-600 font-medium">Choose Area Input Method:</label>
-            <div class="flex space-x-4">
-                <label class="flex items-center space-x-2 cursor-pointer bg-slate-100 p-3 rounded-lg flex-1 transition-colors duration-200 hover:bg-slate-200">
-                    <input type="radio" name="areaInputMethod" value="acres" checked class="text-blue-600 focus:ring-blue-500">
-                    <span>Acres</span>
-                </label>
-                <label class="flex items-center space-x-2 cursor-pointer bg-slate-100 p-3 rounded-lg flex-1 transition-colors duration-200 hover:bg-slate-200">
-                    <input type="radio" name="areaInputMethod" value="dimensions" class="text-blue-600 focus:ring-blue-500">
-                    <span>Length & Width</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Area Inputs -->
-        <div id="acres-input" class="space-y-4">
-            <label for="acres" class="block text-slate-600 font-medium">Enter Field Size in Acres:</label>
-            <input type="number" id="acres" step="0.01" min="0" placeholder="e.g., 5.0"
-                   class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow duration-200">
-        </div>
-        <div id="dimensions-input" class="space-y-4 hidden">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label for="length" class="block text-slate-600 font-medium">Length (feet):</label>
-                    <input type="number" id="length" step="1" min="0" placeholder="e.g., 200"
-                           class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow duration-200">
-                </div>
-                <div>
-                    <label for="width" class="block text-slate-600 font-medium">Width (feet):</label>
-                    <input type="number" id="width" step="1" min="0" placeholder="e.g., 150"
-                           class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow duration-200">
-                </div>
-            </div>
-        </div>
-
-        <!-- Volume-specific input (Depth Slider) -->
-        <div id="volume-inputs" class="space-y-4">
-            <label for="depth" class="block text-slate-600 font-medium">
-                Soil Depth (inches):
-                <span id="depth-value" class="font-bold text-blue-600 ml-2">6.0</span>
-            </label>
-            <input type="range" id="depth" min="1" max="18" value="6.0" step="0.5"
-                   class="w-full appearance-none bg-transparent">
-        </div>
-
-        <!-- Depth-specific input (Required Volume) -->
-        <div id="depth-inputs" class="space-y-4 hidden">
-            <label for="cubic-yards-needed" class="block text-slate-600 font-medium">
-                Required Volume (cubic yards):
-            </label>
-            <input type="number" id="cubic-yards-needed" step="0.01" min="0" placeholder="e.g., 100"
-                   class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow duration-200">
-        </div>
-        
-        <!-- Calculate Button -->
-        <div class="flex justify-center space-x-4">
-            <button id="calculate-button"
-                    class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                Calculate
-            </button>
-            <button id="reset-button"
-                    class="bg-slate-300 text-slate-800 font-bold py-3 px-8 rounded-lg shadow-md hover:bg-slate-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2">
-                Reset
-            </button>
-        </div>
-
-        <!-- Results Display -->
-        <div id="result-container" class="mt-8 text-center hidden">
-            <h2 class="text-xl sm:text-2xl font-semibold text-slate-700">Result:</h2>
-            <p id="result-value" class="text-3xl sm:text-4xl font-extrabold text-blue-600 mt-2"></p>
-        </div>
+<body>
+  <nav class="site-nav">
+    <a class="nav-brand" href="https://robbiemacias.github.io/biogas-project-tools/">&#127807; Biogas Project Tools</a>
+    <a href="https://robbiemacias.github.io/biogas-project-tools/">&#8592; All Tools</a>
+  </nav>
+  <header class="page-header">
+    <h1>Soil Volume Calculator</h1>
+    <p>Calculate the volume or required depth of cultivated soil.</p>
+  </header>
+  <div class="container">
+    <div class="card">
+      <h2>Calculation Mode</h2>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="calculationMode" value="volume" checked />
+          Calculate Volume
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="calculationMode" value="depth" />
+          Calculate Depth
+        </label>
+      </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const acresInput = document.getElementById('acres');
-            const lengthInput = document.getElementById('length');
-            const widthInput = document.getElementById('width');
-            const depthSlider = document.getElementById('depth');
-            const depthValueSpan = document.getElementById('depth-value');
-            const cubicYardsNeededInput = document.getElementById('cubic-yards-needed');
-            const calculateButton = document.getElementById('calculate-button');
-            const resetButton = document.getElementById('reset-button');
-            const resultContainer = document.getElementById('result-container');
-            const resultValue = document.getElementById('result-value');
-            const calculationModeRadios = document.querySelectorAll('input[name="calculationMode"]');
-            const areaInputMethodRadios = document.querySelectorAll('input[name="areaInputMethod"]');
-            const acresInputDiv = document.getElementById('acres-input');
-            const dimensionsInputDiv = document.getElementById('dimensions-input');
-            const volumeInputsDiv = document.getElementById('volume-inputs');
-            const depthInputsDiv = document.getElementById('depth-inputs');
+    <div class="card">
+      <h2>Area Input</h2>
+      <div class="form-group">
+        <span class="form-label">Choose Area Input Method</span>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="areaInputMethod" value="acres" checked />
+            Acres
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="areaInputMethod" value="dimensions" />
+            Length &amp; Width
+          </label>
+        </div>
+      </div>
+      <div id="acres-input" class="form-group">
+        <label class="form-label" for="acres">Enter Field Size in Acres</label>
+        <input type="number" id="acres" step="0.01" min="0" placeholder="e.g., 5.0" />
+      </div>
+      <div id="dimensions-input" class="form-group hidden">
+        <div class="grid-2">
+          <div>
+            <label class="form-label" for="length">Length (feet)</label>
+            <input type="number" id="length" step="1" min="0" placeholder="e.g., 200" />
+          </div>
+          <div>
+            <label class="form-label" for="width">Width (feet)</label>
+            <input type="number" id="width" step="1" min="0" placeholder="e.g., 150" />
+          </div>
+        </div>
+      </div>
+    </div>
 
-            // Constants
-            const SQ_FT_PER_ACRE = 43560;
-            const CUBIC_FT_PER_CUBIC_YD = 27;
-
-            // Function to perform the calculation
-            function calculate() {
-                const calculationMode = document.querySelector('input[name="calculationMode"]:checked').value;
-                const areaInputMethod = document.querySelector('input[name="areaInputMethod"]:checked').value;
-
-                let areaInSqFt = 0;
-                if (areaInputMethod === 'acres') {
-                    const acres = parseFloat(acresInput.value);
-                    if (isNaN(acres) || acres <= 0) {
-                        resultContainer.classList.add('hidden');
-                        return;
-                    }
-                    areaInSqFt = acres * SQ_FT_PER_ACRE;
-                } else {
-                    const length = parseFloat(lengthInput.value);
-                    const width = parseFloat(widthInput.value);
-                    if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) {
-                        resultContainer.classList.add('hidden');
-                        return;
-                    }
-                    areaInSqFt = length * width;
-                }
-
-                if (calculationMode === 'volume') {
-                    const depthInches = parseFloat(depthSlider.value);
-                    const volumeCubicFeet = areaInSqFt * (depthInches / 12);
-                    const volumeCubicYards = volumeCubicFeet / CUBIC_FT_PER_CUBIC_YD;
-                    resultValue.textContent = `${volumeCubicYards.toLocaleString(undefined, { maximumFractionDigits: 2 })} cubic yards`;
-                } else { // calculationMode === 'depth'
-                    const cubicYardsNeeded = parseFloat(cubicYardsNeededInput.value);
-                    if (isNaN(cubicYardsNeeded) || cubicYardsNeeded <= 0) {
-                        resultContainer.classList.add('hidden');
-                        return;
-                    }
-                    // Depth (in) = (Volume (yd³) * 27 * 12) / Area (ft²)
-                    const depthInches = (cubicYardsNeeded * CUBIC_FT_PER_CUBIC_YD * 12) / areaInSqFt;
-                    resultValue.textContent = `${depthInches.toLocaleString(undefined, { maximumFractionDigits: 2 })} inches`;
-                }
-
-                resultContainer.classList.remove('hidden');
-            }
-
-            // Function to update the slider value display
-            function updateSliderValue() {
-                depthValueSpan.textContent = parseFloat(depthSlider.value).toFixed(1);
-            }
-
-            // Function to switch between input methods based on calculation mode
-            function switchInputs() {
-                const calculationMode = document.querySelector('input[name="calculationMode"]:checked').value;
-                
-                if (calculationMode === 'volume') {
-                    volumeInputsDiv.classList.remove('hidden');
-                    depthInputsDiv.classList.add('hidden');
-                } else { // calculationMode === 'depth'
-                    volumeInputsDiv.classList.add('hidden');
-                    depthInputsDiv.classList.remove('hidden');
-                }
-                // Recalculate after changing the mode
-                calculate();
-            }
-
-            // Function to switch between area input methods
-            function switchAreaInputs() {
-                const areaInputMethod = document.querySelector('input[name="areaInputMethod"]:checked').value;
-                if (areaInputMethod === 'acres') {
-                    acresInputDiv.classList.remove('hidden');
-                    dimensionsInputDiv.classList.add('hidden');
-                } else {
-                    acresInputDiv.classList.add('hidden');
-                    dimensionsInputDiv.classList.remove('hidden');
-                }
-                // Recalculate after changing area input method
-                calculate();
-            }
-            
-            // Function to reset all inputs
-            function resetCalculator() {
-                acresInput.value = '';
-                lengthInput.value = '';
-                widthInput.value = '';
-                depthSlider.value = 6.0;
-                cubicYardsNeededInput.value = '';
-                updateSliderValue();
-                resultContainer.classList.add('hidden');
-                document.querySelector('input[name="calculationMode"][value="volume"]').checked = true;
-                document.querySelector('input[name="areaInputMethod"][value="acres"]').checked = true;
-                switchInputs();
-                switchAreaInputs();
-            }
-
-            // Event Listeners
-            calculateButton.addEventListener('click', calculate);
-            resetButton.addEventListener('click', resetCalculator);
-            depthSlider.addEventListener('input', updateSliderValue);
-            depthSlider.addEventListener('change', calculate);
-            acresInput.addEventListener('input', calculate);
-            lengthInput.addEventListener('input', calculate);
-            widthInput.addEventListener('input', calculate);
-            cubicYardsNeededInput.addEventListener('input', calculate);
-            calculationModeRadios.forEach(radio => radio.addEventListener('change', switchInputs));
-            areaInputMethodRadios.forEach(radio => radio.addEventListener('change', switchAreaInputs));
-
-            // Initial setup on page load
-            updateSliderValue();
-            switchInputs();
-            switchAreaInputs();
-        });
-    </script>
+    <div class="card">
+      <h2>Depth / Volume</h2>
+      <div id="volume-inputs" class="form-group">
+        <label class="form-label">Soil Depth (inches): <span id="depth-value" class="range-val" style="display:inline-block;">6.0</span></label>
+        <div class="range-row">
+          <input type="range" id="depth" min="1" max="18" value="6.0" step="0.5" />
+        </div>
+      </div>
+      <div id="depth-inputs" class="form-group hidden">
+        <label class="form-label" for="cubic-yards-needed">Required Volume (cubic yards)</label>
+        <input type="number" id="cubic-yards-needed" step="0.01" min="0" placeholder="e.g., 100" />
+      </div>
+      <div class="btn-row">
+        <button id="calculate-button" class="btn btn-primary">Calculate</button>
+        <button id="reset-button" class="btn btn-secondary">Reset</button>
+      </div>
+      <div id="result-container" class="hidden">
+        <h2>Result</h2>
+        <div id="result-value"></div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">
+    <a href="https://robbiemacias.github.io/biogas-project-tools/">&#127807; Biogas Project Tools Hub</a> &nbsp;&mdash;&nbsp; Macias Renewables
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const acresInput = document.getElementById('acres');
+      const lengthInput = document.getElementById('length');
+      const widthInput = document.getElementById('width');
+      const depthSlider = document.getElementById('depth');
+      const depthValueSpan = document.getElementById('depth-value');
+      const cubicYardsNeededInput = document.getElementById('cubic-yards-needed');
+      const calculateButton = document.getElementById('calculate-button');
+      const resetButton = document.getElementById('reset-button');
+      const resultContainer = document.getElementById('result-container');
+      const resultValue = document.getElementById('result-value');
+      const calculationModeRadios = document.querySelectorAll('input[name="calculationMode"]');
+      const areaInputMethodRadios = document.querySelectorAll('input[name="areaInputMethod"]');
+      const acresInputDiv = document.getElementById('acres-input');
+      const dimensionsInputDiv = document.getElementById('dimensions-input');
+      const volumeInputsDiv = document.getElementById('volume-inputs');
+      const depthInputsDiv = document.getElementById('depth-inputs');
+      const SQ_FT_PER_ACRE = 43560;
+      const CUBIC_FT_PER_CUBIC_YD = 27;
+      function calculate() {
+        const calculationMode = document.querySelector('input[name="calculationMode"]:checked').value;
+        const areaInputMethod = document.querySelector('input[name="areaInputMethod"]:checked').value;
+        let areaInSqFt = 0;
+        if (areaInputMethod === 'acres') {
+          const acres = parseFloat(acresInput.value);
+          if (isNaN(acres) || acres <= 0) { resultContainer.classList.add('hidden'); return; }
+          areaInSqFt = acres * SQ_FT_PER_ACRE;
+        } else {
+          const length = parseFloat(lengthInput.value);
+          const width = parseFloat(widthInput.value);
+          if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0) { resultContainer.classList.add('hidden'); return; }
+          areaInSqFt = length * width;
+        }
+        if (calculationMode === 'volume') {
+          const depthInches = parseFloat(depthSlider.value);
+          const volumeCubicFeet = areaInSqFt * (depthInches / 12);
+          const volumeCubicYards = volumeCubicFeet / CUBIC_FT_PER_CUBIC_YD;
+          resultValue.textContent = `${volumeCubicYards.toLocaleString(undefined, { maximumFractionDigits: 2 })} cubic yards`;
+        } else {
+          const cubicYardsNeeded = parseFloat(cubicYardsNeededInput.value);
+          if (isNaN(cubicYardsNeeded) || cubicYardsNeeded <= 0) { resultContainer.classList.add('hidden'); return; }
+          const depthInches = (cubicYardsNeeded * CUBIC_FT_PER_CUBIC_YD * 12) / areaInSqFt;
+          resultValue.textContent = `${depthInches.toLocaleString(undefined, { maximumFractionDigits: 2 })} inches`;
+        }
+        resultContainer.classList.remove('hidden');
+      }
+      function updateSliderValue() {
+        depthValueSpan.textContent = parseFloat(depthSlider.value).toFixed(1);
+      }
+      function switchInputs() {
+        const calculationMode = document.querySelector('input[name="calculationMode"]:checked').value;
+        if (calculationMode === 'volume') {
+          volumeInputsDiv.classList.remove('hidden');
+          depthInputsDiv.classList.add('hidden');
+        } else {
+          volumeInputsDiv.classList.add('hidden');
+          depthInputsDiv.classList.remove('hidden');
+        }
+        calculate();
+      }
+      function switchAreaInputs() {
+        const areaInputMethod = document.querySelector('input[name="areaInputMethod"]:checked').value;
+        if (areaInputMethod === 'acres') {
+          acresInputDiv.classList.remove('hidden');
+          dimensionsInputDiv.classList.add('hidden');
+        } else {
+          acresInputDiv.classList.add('hidden');
+          dimensionsInputDiv.classList.remove('hidden');
+        }
+        calculate();
+      }
+      function resetCalculator() {
+        acresInput.value = '';
+        lengthInput.value = '';
+        widthInput.value = '';
+        depthSlider.value = 6.0;
+        cubicYardsNeededInput.value = '';
+        updateSliderValue();
+        resultContainer.classList.add('hidden');
+        document.querySelector('input[name="calculationMode"][value="volume"]').checked = true;
+        document.querySelector('input[name="areaInputMethod"][value="acres"]').checked = true;
+        switchInputs();
+        switchAreaInputs();
+      }
+      calculateButton.addEventListener('click', calculate);
+      resetButton.addEventListener('click', resetCalculator);
+      depthSlider.addEventListener('input', updateSliderValue);
+      depthSlider.addEventListener('change', calculate);
+      acresInput.addEventListener('input', calculate);
+      lengthInput.addEventListener('input', calculate);
+      widthInput.addEventListener('input', calculate);
+      cubicYardsNeededInput.addEventListener('input', calculate);
+      calculationModeRadios.forEach(radio => radio.addEventListener('change', switchInputs));
+      areaInputMethodRadios.forEach(radio => radio.addEventListener('change', switchAreaInputs));
+      updateSliderValue();
+      switchInputs();
+      switchAreaInputs();
+    });
+  </script>
 </body>
 </html>
